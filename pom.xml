@@ -61,6 +61,14 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+		<!-- Stripe API integration -->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>20.0.0</version>
+		</dependency>
+
+
 		<!-- JWT support -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

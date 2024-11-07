@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,4 +77,25 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    /* find by username */
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    /* track balance while transaction */
+    public void updateBalance(Long userId, BigDecimal amount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // if balance sufficient
+        if (user.getBalance().compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient balance");
+        }
+
+        // update balance after transaction
+        user.setBalance(user.getBalance().subtract(amount));
+        userRepository.save(user);
+    }
 }
+

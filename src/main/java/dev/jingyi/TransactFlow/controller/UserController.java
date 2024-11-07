@@ -1,29 +1,51 @@
 package dev.jingyi.TransactFlow.controller;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import dev.jingyi.TransactFlow.dto.UserDTO;
 import dev.jingyi.TransactFlow.entity.User;
 import dev.jingyi.TransactFlow.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.aop.ClassFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     // POST - Create new user
     @PostMapping("/register")
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody User user) {
+        System.out.println("Register endpoint hit");
         User savedUser = userService.saveUser(user);  // save user and hash password
         UserDTO userDTO = new UserDTO(savedUser.getId(), savedUser.getUsername());  // create UserDTO
         return new ResponseEntity<>(userDTO, HttpStatus.CREATED);  // return 201 Created
+    }
+
+    // POST - Login
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody Map<String, String> loginData) {
+        String username = loginData.get("username");
+        String password = loginData.get("password");
+
+        User user = userService.findByUsername(username);
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            return ResponseEntity.ok("Login successful");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+        }
     }
 
     // GET - Get all users

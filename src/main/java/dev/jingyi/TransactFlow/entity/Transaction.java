@@ -69,4 +69,12 @@ public class Transaction {
     public void setTransactionDate(LocalDateTime transactionDate) {
         this.transactionDate = transactionDate;
     }
+
+    public BigDecimal getBalanceAfterTransaction() {
+        return amount;
+    }
+
+    public void setBalanceAfterTransaction(BigDecimal newBalance) {
+        this.amount = newBalance;
+    }
 }
